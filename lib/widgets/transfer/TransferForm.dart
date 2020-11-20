@@ -1,4 +1,5 @@
 import 'package:bytebank/models/Transfer.dart';
+import 'package:bytebank/widgets/transfer/TransferEditor.dart';
 import 'package:flutter/material.dart';
 
 class TransferForm extends StatelessWidget {
@@ -14,43 +15,20 @@ class TransferForm extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _accountNumberController,
-              style: TextStyle(fontSize: 24.0),
-              decoration: InputDecoration(
-                  labelText: 'Número da conta',
-                  hintText: '000',
-                  icon: Icon(Icons.perm_identity)),
-              keyboardType: TextInputType.number,
-            ),
+          TransferEditor(
+            controller: _accountNumberController,
+            label: 'Número da conta',
+            hint: '000',
+            iconData: Icons.perm_identity,
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
+          TransferEditor(
               controller: _valueController,
-              style: TextStyle(fontSize: 24.0),
-              decoration: InputDecoration(
-                  labelText: 'Valor',
-                  hintText: '0.00',
-                  icon: Icon(Icons.monetization_on)),
-              keyboardType: TextInputType.number,
-            ),
-          ),
+              label: 'Valor',
+              hint: '0.00',
+              iconData: Icons.monetization_on),
           RaisedButton(
-            onPressed: () {
-              final int accountNumber =
-                  int.tryParse(_accountNumberController.text);
-              final double value = double.tryParse(_valueController.text);
-              if (accountNumber != null && value != null) {
-                final transfer = Transfer(value, accountNumber);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'Transferência de R\$ $value para conta n. $accountNumber'),
-                ));
-              }
-            },
+            onPressed: () => _createTransfer(
+                _accountNumberController, _valueController, context),
             child: Text(
               'Confirmar',
               style: TextStyle(
@@ -64,5 +42,18 @@ class TransferForm extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _createTransfer(TextEditingController _accountNumberController,
+      TextEditingController _valueController, BuildContext context) {
+    final int accountNumber = int.tryParse(_accountNumberController.text);
+    final double value = double.tryParse(_valueController.text);
+    if (accountNumber != null && value != null) {
+      final transfer = Transfer(value, accountNumber);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content:
+            Text('Transferência de R\$ $value para conta n. $accountNumber'),
+      ));
+    }
   }
 }
